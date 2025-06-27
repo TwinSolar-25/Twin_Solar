@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html :class="{ 'theme-dark': dark }" x-data="data()" lang="en">
+  <head>
+    
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./assets/css/tailwind.output.css" />
+    <link rel="stylesheet" href="./assets/css/style.css" />
+    <script
+      src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js"
+      defer
+    ></script>
+    <script src="./assets/js/init-alpine.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.css"
+    />
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"
+      defer
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Firebase scripts -->
+
+
+<!-- 🔥 SDK Firebase (compat) -->
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+  <script src="firebase_init.js"></script>
+
+<script>
+  // ✅ Initialisation UNIQUE ici
+ const firebaseConfig = {
+  apiKey: "AIzaSyC9SSxRrZuBGohylOc8A2m1SmIlCXac_yQ",
+  authDomain: "solar2025-b04b6.firebaseapp.com",
+  projectId: "solar2025-b04b6",
+  storageBucket: "solar2025-b04b6.firebasestorage.app",
+  messagingSenderId: "534281457072",
+  appId: "1:534281457072:web:a910c154b0b62cda0a9a75",
+  measurementId: "G-N6M6Q1ME0Y"
+};
+  firebase.initializeApp(firebaseConfig);
+</script>
+<style>
+    @keyframes pulse-badge {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.5);
+    opacity: 0.6;
+  }
+}
+
+.attention-pulse {
+  animation: pulse-badge 1s ease-in-out infinite;
+}
+</style>
+  </head>
+  <body>
+ <!-- Début login box stylé -->
+<div id="login-box" style="display:flex; justify-content:center; align-items:center; height:100vh; background: url('https://raw.githubusercontent.com/TwinSolar-25/logo/main/thumbnails_b2b47316-f5ff-443f-869e-66a58b3742c5.image.png') no-repeat center center fixed; background-size: cover; font-family:'Inter', sans-serif;">
+
+  <div style="background:rgba(31, 41, 55, 0.9); padding:30px; border-radius:16px; width:320px; box-shadow: 0 0 20px rgba(0,0,0,0.3); color:white;">
+    
+    <!-- Logo + Titre -->
+    <div style="display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:20px;">
+      <img src="https://raw.githubusercontent.com/TwinSolar-25/logo/main/c4b3df00-1e33-459c-a70b-0909a476ac1c.image.png" alt="Logo" style="width:100px; height:100px;" />
+      <h2 style="font-weight:600; font-size:1.2rem; margin:4;">Connexion sécurisée</h2>
+    </div>
+
+    <label for="email" style="font-size:0.9rem; opacity:1;">Adresse email</label>
+    <input id="email" type="email" placeholder="ex: utilisateur@email.com"
+      style="width:100%; padding:12px 15px; margin-top:6px; margin-bottom:16px; background:#374151; border:none; border-radius:8px; color:white;" />
+
+    <button onclick="checkEmail()"
+      style="width:100%; background:#4fa9f0; padding:12px; border:none; border-radius:8px; color:white; font-weight:500; font-size:1rem; transition:0.3s;">
+      Vérifier
+    </button>
+
+    <div id="pwFields" style="display:none; margin-top:20px;">
+      <label for="pw" style="font-size:0.9rem; opacity:0.8;">Mot de passe</label>
+      <input id="pw" type="password" placeholder="••••••••"
+        style="width:100%; padding:12px 15px; margin-top:6px; margin-bottom:16px; background:#374151; border:none; border-radius:8px; color:white;" />
+
+      <button onclick="loginUser()"
+        style="width:100%; background:#4fa9f0; padding:12px; border:none; border-radius:8px; color:white; font-weight:500; font-size:1rem; transition:0.3s;">
+        Se connecter
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Fin login box -->
+
+
+    <div id="main-content"
+      class="flex h-screen bg-gray-50 dark:bg-gray-900"
+      :class="{ 'overflow-hidden': isSideMenuOpen }"
+    >
+      <!-- Desktop sidebar -->
+      <aside
+        class="z-20 hidden w-64 overflow-y-auto bg-white dark:bg-gray-800 md:block flex-shrink-0 aside-bg"
+      >
+      <div class="ml-6 text-lg font-bold text-gray-800 dark:text-gray-200 flex items-center mt-6 mb-1">
+     <img class="rounded-full w-12 h-12 mr-4"
+      src="https://raw.githubusercontent.com/TwinSolar-25/logo/main/c4b3df00-1e33-459c-a70b-0909a476ac1c.image.png" 
+      alt="logo"
+      />
+            <h2>TWIN SOLAR</h2>
+      </div>
+        <div class="py-4 text-gray-500 dark:text-gray-400">
+           
+          <ul class="mt-6">
+            <li class="relative px-6 py-3">
+              <span
+                class="absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg"
+                aria-hidden="true"
+              ></span>
+              <a
+                class="inline-flex items-center w-full text-sm font-semibold text-gray-800 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 dark:text-gray-100"
+                href="index.html"
+              >
+                <svg
+                  class="w-5 h-5"
+                  aria-hidden="true"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                  ></path>
+                </svg>
+                <span class="ml-4">Dashboard</span>
+              </a>
+            </li>
+          </ul>
+          <ul>
+            <li class="relative px-6 py-3">
+              <a
+                class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+                href="About.html"
+              >
+                <svg
+                  class="w-5 h-5"
+                  aria-hidden="true"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
+                  ></path>
+                </svg>
+                <span class="ml-4">About</span>
+              </a>
+            </li>
+            <li class="relative px-6 py-3">
+              <a
+                class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+                href="HistoricalMeasures.html"
+              >
+                <svg
+                  class="w-5 h-5"
+                  aria-hidden="true"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                  ></path>
+                </svg>
+                <span class="ml-4">HistoricalMeasures</span>
+              </a>
+            </li>
+            <li class="relative px-6 py-3">
+              <a
+                class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+                href="charts.html"
+              >
+                <svg
+                  class="w-5 h-5"
+                  aria-hidden="true"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"
+                  ></path>
+                  <path d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path>
+                </svg>
+                <span class="ml-4">Charts</span>
+              </a>
+            </li>
+           <li class="relative px-6 py-3">
+  <a
+    class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+    href="histoalerts.html"
+  >
+    <svg
+      class="w-5 h-5"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      stroke-width="2"
+    >
+      <path stroke-linecap="round" stroke-linejoin="round"
+        d="M12 9v2m0 4h.01M4.93 4.93l1.41 1.41M1 13h2m18 0h2m-4.34-6.34l-1.41 1.41M12 1v2m-6.36 15a9 9 0 1112.72 0H5.64z" />
+    </svg>
+    <span class="ml-4">HistoricalAlerts</span>
+  </a>
+</li>
+
+            <li class="relative px-6 py-3">
+              <a
+                class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+                href="MissionsOverview.html"
+              >
+                <svg
+                  class="w-5 h-5"
+                  aria-hidden="true"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                  ></path>
+                </svg>
+                <span class="ml-4">MissionsOverview</span>
+              </a>
+            </li>
+            <li class="relative px-6 py-3">
+              <a
+                class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200"
+                href="Vocal_guide.html"
+              >
+ <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2"
+     viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
+     stroke-linecap="round" stroke-linejoin="round">
+  <path d="M12 1v14a4 4 0 004-4V5a4 4 0 00-8 0v6a4 4 0 004 4z"></path>
+  <path d="M19 10v2a7 7 0 01-14 0v-2"></path>
+  <path d="M12 19v4"></path>
+  <path d="M8 23h8"></path>
+</svg>
+                <span class="ml-4">Vocal_guide</span>
+              </a>
+            </li>
+            
+          </ul>
+        </div>
+      </aside>
+
+      
+      <div class="flex flex-col flex-1 w-full">
+        <header id="main-header" class="z-10 py-4 bg-white shadow-md dark:bg-gray-800">
+          <div
+  class="container flex items-center justify-between h-full px-6 mx-auto"
+  style="color: #a1a8a9;"
+>
+
+            <!-- Search input -->
+             <!-- Weather Info Box -->
+    <div id="weatherInfo" class="flex items-center space-x-4" style="display: none;">
+      <span id="infoBox">Chargement des données météo...</span>
+    </div>
+            <ul class="flex items-center flex-shrink-0 space-x-6">
+              <!-- Theme toggler -->
+              
+              <li class="relative" x-data="{ isNotificationsMenuOpen: false, meteoMessage: '', loading: false }">
+  <button
+    class="relative align-middle rounded-md focus:outline-none focus:shadow-outline-purple"
+   @click="
+  isNotificationsMenuOpen = !isNotificationsMenuOpen;
+  loading = true;
+  meteoMessage = 'Chargement...';
+  fetch('https://api.open-meteo.com/v1/forecast?latitude=34.02&longitude=-6.84&hourly=direct_radiation,cloudcover,precipitation&timezone=Africa%2FCasablanca')
+    .then(res => res.json())
+    .then(data => {
+      const times = data.hourly.time;
+      const radiation = data.hourly.direct_radiation;
+      const clouds = data.hourly.cloudcover;
+      const rain = data.hourly.precipitation;
+
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const isoTomorrow = tomorrow.toISOString().slice(0, 10);
+      const dateFR = tomorrow.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' });
+
+      let rad = [], cld = [], rn = [];
+      for (let i = 0; i < times.length; i++) {
+        if (times[i].startsWith(isoTomorrow)) {
+          rad.push(radiation[i]);
+          cld.push(clouds[i]);
+          rn.push(rain[i]);
+        }
+      }
+
+      const mean = arr => arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0;
+      const radMean = mean(rad);    // W/m²
+      const cloudMean = mean(cld);  // %
+      const rainSum = rn.reduce((a, b) => a + b, 0); // mm
+           
+
+     const hasSunnyWindow = rad.some((v, i) => v > 400 && cld[i] < 40);
+const highClouds = cloudMean > 80;
+const lowRadiation = radMean < 100;
+
+if (hasSunnyWindow && !highClouds)
+  meteoMessage = `Demain le ${dateFR} à Rabat : ☀️ Journée partiellement ensoleillée. Bonne production attendue.`;
+else if (!lowRadiation && cloudMean < 85)
+  meteoMessage = `Demain le ${dateFR} à Rabat : 🌤️ Ciel variable. Production moyenne attendue.`;
+else
+  meteoMessage = `Demain le ${dateFR} à Rabat : 🌧️ Ciel très couvert. Faible production attendue.`;
+
+
+      loading = false;
+    })
+    .catch(() => {
+      meteoMessage = '❌ Erreur de chargement météo.';
+      loading = false;
+    });
+"
+    @keydown.escape="closeNotificationsMenu"
+    aria-label="Notifications"
+    aria-haspopup="true"
+  >
+    <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
+      <path
+        d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"
+      ></path>
+    </svg>
+    <!-- Badge -->
+    <span
+      aria-hidden="true"
+      class="absolute top-0 right-0 inline-block w-3 h-3 transform translate-x-1 -translate-y-1 bg-red-600 border-2 border-white rounded-full dark:border-gray-800"
+    ></span>
+  </button>
+
+  <!-- Menu avec message météo directement -->
+  <template x-if="isNotificationsMenuOpen">
+    <ul
+      x-show="isNotificationsMenuOpen"
+      x-transition:leave="transition ease-in duration-150"
+      x-transition:leave-start="opacity-100"
+      x-transition:leave-end="opacity-0"
+      @click.away="closeNotificationsMenu"
+      class="absolute right-0 w-64 p-2 mt-2 space-y-2 text-gray-600 bg-white border border-gray-100 rounded-md shadow-md dark:text-gray-300 dark:border-gray-700 dark:bg-gray-700"
+    >
+      <li>
+        <div
+  x-show="meteoMessage !== ''"
+  x-text="meteoMessage"
+  class="px-4 py-3 text-sm font-medium text-white rounded-md shadow-md w-full border border-purple-500 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600"
+  style="animation: fadeIn 0.3s ease-in-out;"
+></div>
+
+      </li>
+    </ul>
+  </template>
+</li>
+<li class="relative" x-data="{ isAlertsMenuOpen: false }">
+  <button
+    class="relative align-middle rounded-md focus:outline-none focus:shadow-outline-purple"
+    @click="
+      isAlertsMenuOpen = !isAlertsMenuOpen;
+      document.getElementById('alerts-menu-message').innerText = 'Chargement...';
+      setTimeout(afficherAlerteDuJour, 500); // attendre que DOM se mette à jour
+    "
+    aria-label="Alertes"
+    aria-haspopup="true"
+  >
+    <!-- Icône alerte -->
+    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+      <path
+        fill-rule="evenodd"
+        d="M10.29 3.86L1.82 18a1.5 1.5 0 001.29 2.25h17.78a1.5 1.5 0 001.29-2.25L13.71 3.86a1.5 1.5 0 00-2.42 0zM12 9a1 1 0 011 1v4a1 1 0 01-2 0v-4a1 1 0 011-1zm0 8a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"
+        clip-rule="evenodd"
+      />
+    </svg>
+    <span class="absolute top-0 right-0 inline-block w-3 h-3 transform translate-x-1 -translate-y-1 bg-red-500 border-2 border-white rounded-full dark:border-gray-800"></span>
+  </button>
+
+  <template x-if="isAlertsMenuOpen">
+    <ul
+      class="absolute right-0 w-64 p-2 mt-2 space-y-2 text-gray-700 bg-white border border-gray-100 rounded-md shadow-md dark:text-gray-300 dark:border-gray-700 dark:bg-gray-700"
+      x-show="isAlertsMenuOpen"
+      @click.away="isAlertsMenuOpen = false"
+    >
+      <li>
+        <div
+          id="alerts-menu-message"
+          class="px-4 py-3 text-sm font-medium text-white rounded-md shadow-md w-full border border-purple-500 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600"
+        >Chargement...</div>
+      </li>
+      <li>
+        <a
+          href="histoalerts.html"
+          class="block px-3 py-1 mt-1 text-center text-sm font-semibold text-black bg-white rounded hover:bg-gray-100"
+        >📄 Voir les détails</a>
+      </li>
+    </ul>
+  </template>
+</li>
+
+   <!-- Profile menu -->
+              <li class="relative">
+                <button
+                  class="align-middle rounded-full focus:shadow-outline-purple focus:outline-none"
+                  @click="toggleProfileMenu"
+                  @keydown.escape="closeProfileMenu"
+                  aria-label="Account"
+                  aria-haspopup="true"
+                >
+                  <img
+                    class="object-cover w-8 h-8 rounded-full"
+      src="https://raw.githubusercontent.com/TwinSolar-25/logo/main/c4b3df00-1e33-459c-a70b-0909a476ac1c.image.png" 
+                    alt=""
+                    aria-hidden="true"
+                  />
+                </button>
+                <template x-if="isProfileMenuOpen">
+                  <ul
+                    x-transition:leave="transition ease-in duration-150"
+                    x-transition:leave-start="opacity-100"
+                    x-transition:leave-end="opacity-0"
+                    @click.away="closeProfileMenu"
+                    @keydown.escape="closeProfileMenu"
+                    class="absolute right-0 w-56 p-2 mt-2 space-y-2 text-gray-600 bg-white border border-gray-100 rounded-md shadow-md dark:border-gray-700 dark:text-gray-300 dark:bg-gray-700"
+                    aria-label="submenu"
+                  >
+                    <li class="flex">
+                      <a
+                        class="inline-flex items-center w-full px-2 py-1 text-sm font-semibold transition-colors duration-150 rounded-md hover:bg-gray-100 hover:text-gray-800 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                        href="index.html"
+                      >
+                        <svg
+                          class="w-4 h-4 mr-3"
+                          aria-hidden="true"
+                          fill="none"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
+                          ></path>
+                        </svg>
+                        <span>Log out</span>
+                      </a>
+                    </li>
+                  </ul>
+                </template>
+              </li>
+            </ul>
+          </div>
+        </header>
+        <main class="h-full overflow-y-auto" style="position: relative;">
+  <canvas id="renderCanvas"></canvas>
+  <div id="meshLabel" style="
+    position: absolute;
+    background: #111827;
+    color: white;
+    border: 1px solid #6366f1;
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 13px;
+    pointer-events: none;
+    display: none;
+    z-index: 9999;"></div>
+
+  <!-- Librairies externes -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.babylonjs.com/babylon.js"></script>
+  <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+  <script src="https://cdn.babylonjs.com/materialsLibrary/babylon.gridMaterial.min.js"></script>
+
+  <script>
+    const canvas = document.getElementById("renderCanvas");
+    const engine = new BABYLON.Engine(canvas, true);
+    const scene = new BABYLON.Scene(engine);
+    scene.clearColor = new BABYLON.Color4(0.18, 0.18, 0.18, 1);
+
+    const camera = new BABYLON.ArcRotateCamera("camera", Math.PI / 2, Math.PI / 2.5, 80, BABYLON.Vector3.Zero(), scene); // dézoomé
+    camera.attachControl(canvas, true);
+
+    new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
+
+    const ground = BABYLON.MeshBuilder.CreateGround("ground", { width: 1000, height: 1000 });
+    ground.position.y = -5;
+
+    const gridMat = new BABYLON.GridMaterial("gridMat", scene);
+    gridMat.gridRatio = 1;
+    gridMat.mainColor = new BABYLON.Color3(1, 1, 1);
+    gridMat.lineColor = new BABYLON.Color3(0.6, 0.6, 0.6);
+    gridMat.backFaceCulling = false;
+    gridMat.majorUnitFrequency = 10;
+    gridMat.minorUnitVisibility = 0.4;
+    gridMat.opacity = 0.4;
+    ground.material = gridMat;
+
+    BABYLON.SceneLoader.Append("", "https://raw.githubusercontent.com/TwinSolar-25/logo/main/glb3.glb", scene);
+
+    const label = document.getElementById("meshLabel");
+    let timeout;
+    let lastClickedMesh = null;
+let originalEmissiveColor = null;
+
+
+    scene.onPointerMove = () => {
+      const pick = scene.pick(scene.pointerX, scene.pointerY);
+      if (
+        pick.hit &&
+        pick.pickedMesh &&
+        pick.pickedMesh.name &&
+        (pick.pickedMesh.name.toLowerCase().includes("fil") || /^[2-9]\d{4,}$/.test(pick.pickedMesh.name))
+      ) {
+        canvas.style.cursor = "pointer";
+      } else {
+        canvas.style.cursor = "default";
+      }
+    };
+
+    scene.onPointerObservable.add((pointerInfo) => {
+      if (pointerInfo.type === BABYLON.PointerEventTypes.POINTERPICK) {
+        const pick = pointerInfo.pickInfo;
+        if (
+          pick.hit &&
+          pick.pickedMesh &&
+          pick.pickedMesh.name &&
+          (pick.pickedMesh.name.toLowerCase().includes("fil") || /^[2-9]\d{4,}$/.test(pick.pickedMesh.name))
+        ) {
+          // Calculer position écran depuis la position monde
+          const pos = pick.pickedPoint;
+          const pos2D = BABYLON.Vector3.Project(pos, BABYLON.Matrix.Identity(), scene.getTransformMatrix(), camera.viewport.toGlobal(canvas.width, canvas.height));
+
+          label.innerText = `🆔 ${pick.pickedMesh.name}`;
+          label.style.left = `${pos2D.x + 10}px`;
+          label.style.top = `${pos2D.y + 10}px`;
+          label.style.display = "block";
+
+          clearTimeout(timeout);
+          timeout = setTimeout(() => {
+            label.style.display = "none";
+          }, 3000);
+        }
+      }
+    });
+
+    engine.runRenderLoop(() => scene.render());
+    window.addEventListener("resize", () => engine.resize());
+  </script>
+
+  <!-- Conteneur des courbes onduleurs -->
+  <div id="chartContainer" style="display: none;">
+    <h3>Production des panneaux solaires- entré onduleur</h3>
+    <div class="controls">
+      <label>Début:</label>
+      <select id="startDate"></select>
+      <label>Fin:</label>
+      <select id="endDate"></select>
+    </div>
+    <canvas id="combinedChart"></canvas>
+    <div class="date-label" id="globalDateLabel"></div>
+    <h3>Production des panneaux solaires- sortie onduleur</h3>
+    <div class="controls">
+        <label>Début:</label>
+        <select id="startDate2"></select>
+        <label>Fin:</label>
+        <select id="endDate2"></select>
+    </div>
+    <canvas id="combinedChart2"></canvas>
+    <div class="date-label" id="globalDateLabel2"></div>
+
+  </div>
+  <!-- Infobox capteur -->
+<div id="cap-infoBox"></div>
+
+
+  <script src="weather.js"></script>
+  <script src="onduleur_chart.js"></script>
+<script type="module" src="capteur_graph.js"></script>
+    <script src="mesh.js"></script>
+          
+        </main>
+        
+      </div>
+    </div>
+<script>
+function afficherAlerteDuJour() {
+  const today = new Date().toISOString().slice(0, 10);
+  const boxes = document.querySelectorAll('#alertes-container .alerte-box');
+  let msg = "✅ Aucune alerte détectée aujourd’hui.\nAppuyez sur Voir les détails pour l’historique.";
+
+  for (let box of boxes) {
+    const match = box.innerHTML.match(/Date mesure\s*:\s*([\d/: -]+)/);
+    if (match) {
+      const dateStr = match[1];
+      if (dateStr.includes(today)) {
+        const titre = box.querySelector("strong")?.innerText || "";
+        msg = titre;
+        break;
+      }
+    }
+  }
+
+  const menuElement = document.getElementById("alerts-menu-message");
+  if (menuElement) menuElement.innerText = msg;
+}
+
+</script>
+
+<script>
+  let userEmail = "";
+
+  async function checkEmail() {
+    userEmail = document.getElementById("email").value.trim().toLowerCase();
+    if (!userEmail) return alert("Email requis.");
+
+    try {
+      const doc = await firebase.firestore().collection("authorized_users").doc(userEmail).get();
+      if (!doc.exists || doc.data().authorized !== true) {
+        alert("⛔ Email non autorisé.");
+        return;
+      }
+      document.getElementById("pwFields").style.display = "block";
+    } catch (err) {
+      alert("Erreur Firebase : " + err.message);
+    }
+  }
+
+  async function loginUser() {
+    const pw = document.getElementById("pw").value;
+    const doc = await firebase.firestore().collection("authorized_users").doc(userEmail).get();
+
+    if (doc.exists && doc.data().password === pw) {
+      alert("✅ Connexion réussie !");
+      document.getElementById("login-box").style.display = "none";
+document.getElementById("main-content").style.display = "flex";
+document.getElementById("main-header").style.display = "block";  // Affiche le header
+document.getElementById("chartContainer").style.display = "block";
+      document.getElementById("weatherInfo").style.display = "block";  // Affiche les courbes// Affiche les courbes
+
+    } else {
+      alert("⛔ Mot de passe incorrect.");
+    }
+  }
+</script>
+
+
+  </body>
+</html>
